@@ -8,28 +8,40 @@ public class SimpleMenu implements Menu {
 
     @Override
     public boolean add(String parentName, String childName, ActionDelegate actionDelegate) {
-   /*  добавьте реализацию*/
-        return  false;
+        boolean result;
+        if (findItem(parentName).isPresent() || findItem(childName).isPresent()) {
+            rootElements.add(new SimpleMenuItem(parentName, actionDelegate));
+            result = true;
+        } else {
+            result = false;
+        }
+        return result;
     }
 
     @Override
     public Optional<MenuItemInfo> select(String itemName) {
-        /*  добавьте реализацию*/
-        return null;
+        MenuItemInfo menuItemInfo = null;
+        Optional<ItemInfo> itemInfoOptional = findItem(itemName);
+        if (itemInfoOptional.isPresent()) {
+            ItemInfo itemInfo = itemInfoOptional.get();
+            menuItemInfo = new MenuItemInfo(itemInfo.getMenuItem(), itemInfo.getNumber());
+        }
+        assert menuItemInfo != null;
+        return Optional.of(menuItemInfo);
     }
 
     @Override
     public Iterator<MenuItemInfo> iterator() {
-        /*  добавьте реализацию*/
+        DFSIterator dfsIterator = new DFSIterator();
         return null;
     }
 
     private Optional<ItemInfo> findItem(String name) {
         DFSIterator dfsIterator = new DFSIterator();
         ItemInfo itemInfo = null;
-        for (MenuItem i : rootElements) {
-            if (i.getName().equals(name)) {
-                itemInfo = new ItemInfo(i, null);
+        while (dfsIterator.hasNext()) {
+            if (dfsIterator.next().getMenuItem().getName().equals(name)) {
+                itemInfo = dfsIterator.next();
             }
         }
         assert itemInfo != null;
